@@ -8,12 +8,13 @@ import apiRoute from "./routes/apiRoute.js";
 import jobRoute from "./routes/jobRoute.js";
 import {startHCSListener} from "./services/hcsListenerService.js";
 
-const allowedOrigins = ['http://localhost:5173', 'https://afiya-yx0e.onrender.com'];
+const allowedOrigins = ['http://localhost:5173', 'http://localhost:3000', 'https://afiya-yx0e.onrender.com'];
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
+
 app.use(cors({
   origin: allowedOrigins
 }));
