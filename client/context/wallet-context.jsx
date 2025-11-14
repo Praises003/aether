@@ -42,7 +42,7 @@ export function WalletProvider({ children }) {
         metadata: {
           name: "Aether",
           description: "A decentralized API marketplace",
-          url: "http://localhost:3000",
+          url: "https://aether-gilt-delta.vercel.app",
           //icons: ["https://yourapp.com/icon.png"],
         },
       });
