@@ -1,43 +1,36 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Navbar } from "@/components/navbar"
-import { useWallet } from "@/context/wallet-context"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft, CheckCircle2, Loader2 } from "lucide-react"
-import Link from "next/link"
-import { useParams } from "next/navigation"
-
-interface FunctionDetail {
-  id: string
-  name: string
-  description: string
-  provider: string
-  price: number
-  fullDescription: string
-}
-
-type TransactionStep = "idle" | "awaiting-approval" | "processing" | "complete" | "error"
+import { useState, useEffect } from "react";
+import { Navbar } from "@/components/navbar";
+import { useWallet } from "@/context/wallet-context";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowLeft, CheckCircle2, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 
 export default function FunctionDetailPage() {
-  const params = useParams()
-  const functionId = params.id as string
-  const { isConnected, accountId, balance } = useWallet()
+  const params = useParams();
+  const functionId = params.id;
+  const { walletData, connectWallet } = useWallet();
 
-  const [func, setFunc] = useState<FunctionDetail | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [prompt, setPrompt] = useState("")
-  const [transactionStep, setTransactionStep] = useState<TransactionStep>("idle")
-  const [resultImage, setResultImage] = useState<string | null>(null)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [func, setFunc] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [prompt, setPrompt] = useState("");
+  const [transactionStep, setTransactionStep] = useState("idle");
+  const [resultImage, setResultImage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
+
+  const isConnected = !!walletData?.accountId;
+
+  // Mock balance for demo purposes
+  const balance = 100; // replace with real logic if you fetch balance from Hedera
 
   useEffect(() => {
     const fetchFunction = async () => {
       try {
-        await new Promise((resolve) => setTimeout(resolve, 400))
+        await new Promise((resolve) => setTimeout(resolve, 400));
 
-        // Mock data
         setFunc({
           id: functionId,
           name: "AI Image Generator",
@@ -46,54 +39,48 @@ export default function FunctionDetailPage() {
           price: 10,
           fullDescription:
             "Create stunning images from simple text descriptions using state-of-the-art AI models. Perfect for designers, marketers, and creative professionals.",
-        })
+        });
       } catch (error) {
-        console.error("Failed to fetch function:", error)
+        console.error("Failed to fetch function:", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchFunction()
-  }, [functionId])
+    fetchFunction();
+  }, [functionId]);
 
   const handleGenerateClick = async () => {
-    if (!prompt.trim()) return
-    if (!isConnected) return
-    if (!func) return
+    if (!prompt.trim()) return;
+    if (!isConnected) return;
+    if (!func) return;
     if (balance !== null && balance < func.price) {
-      setErrorMessage(`Insufficient balance. You need ${func.price} HBAR but have ${balance}.`)
-      setTimeout(() => setErrorMessage(null), 5000)
-      return
+      setErrorMessage(`Insufficient balance. You need ${func.price} HBAR but have ${balance}.`);
+      setTimeout(() => setErrorMessage(null), 5000);
+      return;
     }
 
-    setErrorMessage(null)
-    setTransactionStep("awaiting-approval")
+    setErrorMessage(null);
+    setTransactionStep("awaiting-approval");
 
     try {
-      // Step 1: User approves in HashPack
-      await new Promise((resolve) => setTimeout(resolve, 1200))
-
-      setTransactionStep("processing")
-
-      // Step 2: Backend processes
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-
-      // Step 3: Result comes back
-      setTransactionStep("complete")
-      setResultImage("/ai-generated-image-of-space-cat.jpg")
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+      setTransactionStep("processing");
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      setTransactionStep("complete");
+      setResultImage("/ai-generated-image-of-space-cat.jpg");
     } catch (error) {
-      setTransactionStep("error")
-      setErrorMessage("Transaction failed. Please try again.")
+      setTransactionStep("error");
+      setErrorMessage("Transaction failed. Please try again.");
     }
-  }
+  };
 
   const handleReset = () => {
-    setTransactionStep("idle")
-    setResultImage(null)
-    setPrompt("")
-    setErrorMessage(null)
-  }
+    setTransactionStep("idle");
+    setResultImage(null);
+    setPrompt("");
+    setErrorMessage(null);
+  };
 
   if (loading) {
     return (
@@ -106,7 +93,7 @@ export default function FunctionDetailPage() {
           </div>
         </div>
       </main>
-    )
+    );
   }
 
   if (!func) {
@@ -117,7 +104,7 @@ export default function FunctionDetailPage() {
           <p className="text-muted-foreground">Function not found</p>
         </div>
       </main>
-    )
+    );
   }
 
   return (
@@ -125,7 +112,6 @@ export default function FunctionDetailPage() {
       <Navbar />
 
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Back button */}
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-8"
@@ -135,7 +121,6 @@ export default function FunctionDetailPage() {
         </Link>
 
         <div className="grid gap-8 lg:grid-cols-3">
-          {/* Function Details */}
           <div className="lg:col-span-2 space-y-6">
             <div>
               <h1 className="text-4xl font-bold tracking-tight">{func.name}</h1>
@@ -160,7 +145,6 @@ export default function FunctionDetailPage() {
               </CardContent>
             </Card>
 
-            {/* Input Form */}
             <Card>
               <CardHeader>
                 <CardTitle>Generate</CardTitle>
@@ -187,20 +171,18 @@ export default function FunctionDetailPage() {
 
                 {!isConnected && (
                   <div className="rounded-lg border border-primary/50 bg-primary/5 p-3 text-sm">
-                    Please connect your wallet to use this function
+                    <Button onClick={connectWallet} className="text-sm">Connect Wallet</Button>
                   </div>
                 )}
 
-                {/* Status Display */}
                 {transactionStep !== "idle" && (
                   <div className="space-y-3 rounded-lg border border-primary/50 bg-primary/5 p-4">
                     {transactionStep === "awaiting-approval" && (
                       <div className="flex items-center gap-3">
                         <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                        <span className="text-sm">Awaiting your approval in HashPack...</span>
+                        <span className="text-sm">Awaiting your approval...</span>
                       </div>
                     )}
-
                     {transactionStep === "processing" && (
                       <div className="space-y-2">
                         <div className="flex items-center gap-3">
@@ -213,14 +195,12 @@ export default function FunctionDetailPage() {
                         </div>
                       </div>
                     )}
-
                     {transactionStep === "complete" && (
                       <div className="flex items-center gap-3">
                         <CheckCircle2 className="h-4 w-4 text-green-500" />
                         <span className="text-sm">Generation complete!</span>
                       </div>
                     )}
-
                     {transactionStep === "error" && (
                       <div className="flex items-center gap-3">
                         <div className="h-4 w-4 rounded-full border-2 border-destructive" />
@@ -230,19 +210,14 @@ export default function FunctionDetailPage() {
                   </div>
                 )}
 
-                {/* Result Display */}
                 {resultImage && transactionStep === "complete" && (
                   <div className="space-y-3">
                     <div className="rounded-lg border border-border overflow-hidden">
-                      <img src={resultImage || "/placeholder.svg"} alt="Generated result" className="w-full" />
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      Transaction ID: {Math.random().toString(36).substring(7).toUpperCase()}
+                      <img src={resultImage} alt="Generated result" className="w-full" />
                     </div>
                   </div>
                 )}
 
-                {/* Action Buttons */}
                 <div className="flex gap-3">
                   {transactionStep === "idle" ? (
                     <Button
@@ -267,7 +242,6 @@ export default function FunctionDetailPage() {
             </Card>
           </div>
 
-          {/* Sidebar */}
           <div className="lg:col-span-1">
             <Card className="sticky top-24">
               <CardHeader>
@@ -278,26 +252,12 @@ export default function FunctionDetailPage() {
                   <>
                     <div>
                       <p className="text-sm text-muted-foreground">Account ID</p>
-                      <p className="font-mono text-sm font-semibold break-all">{accountId}</p>
+                      <p className="font-mono text-sm font-semibold break-all">{walletData.accountId}</p>
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Available Balance</p>
                       <p className="text-2xl font-bold text-primary">{balance} HBAR</p>
                     </div>
-                    <div className="rounded-lg bg-secondary/50 p-3">
-                      <p className="text-xs text-muted-foreground mb-1">Cost</p>
-                      <p className="font-semibold">{func.price} HBAR</p>
-                    </div>
-                    {balance !== null && balance >= func.price && (
-                      <div className="rounded-lg border border-green-500/50 bg-green-500/10 p-2">
-                        <p className="text-xs text-green-500 font-medium">Sufficient balance</p>
-                      </div>
-                    )}
-                    {balance !== null && balance < func.price && (
-                      <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-2">
-                        <p className="text-xs text-destructive font-medium">Insufficient balance</p>
-                      </div>
-                    )}
                   </>
                 ) : (
                   <p className="text-sm text-muted-foreground">Connect wallet to see balance</p>
@@ -308,5 +268,5 @@ export default function FunctionDetailPage() {
         </div>
       </div>
     </main>
-  )
+  );
 }

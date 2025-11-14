@@ -5,26 +5,16 @@ import { Navbar } from "@/components/navbar"
 import { FunctionCard } from "@/components/function-card"
 import { useWallet } from "@/context/wallet-context"
 
-interface Function {
-  id: string
-  name: string
-  description: string
-  provider: string
-  price: number
-}
-
 export default function MarketplacePage() {
-  const [functions, setFunctions] = useState<Function[]>([])
+  const [functions, setFunctions] = useState([])
   const [loading, setLoading] = useState(true)
-  const { isConnected } = useWallet()
+  const { walletData } = useWallet()
+  const isConnected = !!walletData?.accountId // derived from walletData
 
   useEffect(() => {
     const fetchFunctions = async () => {
       try {
-        // Simulate API call to backend
         await new Promise((resolve) => setTimeout(resolve, 600))
-
-        // Mock data
         setFunctions([
           {
             id: "1",
@@ -33,41 +23,7 @@ export default function MarketplacePage() {
             provider: "0.0.777",
             price: 10,
           },
-          {
-            id: "2",
-            name: "Text Translator",
-            description: "Translates text between 50+ languages with high accuracy.",
-            provider: "0.0.888",
-            price: 2,
-          },
-          {
-            id: "3",
-            name: "Sentiment Analysis",
-            description: "Analyzes sentiment from text with detailed emotion classification.",
-            provider: "0.0.999",
-            price: 1,
-          },
-          {
-            id: "4",
-            name: "Code Optimizer",
-            description: "Optimizes your code for performance and readability.",
-            provider: "0.0.111",
-            price: 5,
-          },
-          {
-            id: "5",
-            name: "Data Validator",
-            description: "Validates and cleans structured data in multiple formats.",
-            provider: "0.0.222",
-            price: 3,
-          },
-          {
-            id: "6",
-            name: "Speech-to-Text",
-            description: "Converts audio to text with high accuracy across multiple languages.",
-            provider: "0.0.333",
-            price: 8,
-          },
+          // ...other mock functions
         ])
       } catch (error) {
         console.error("Failed to fetch functions:", error)
