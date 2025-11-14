@@ -8,7 +8,7 @@ import apiRoute from "./routes/apiRoute.js";
 import jobRoute from "./routes/jobRoute.js";
 import {startHCSListener} from "./services/hcsListenerService.js";
 
-const allowedOrigins = ['http://localhost:5173', 'http://localhost:3000', 'https://afiya-yx0e.onrender.com'];
+const allowedOrigins = ['http://localhost:5173', 'http://localhost:3000', 'https://afiya-yx0e.onrender.com', "https://aether-gilt-delta.vercel.app"];
 
 dotenv.config();
 
