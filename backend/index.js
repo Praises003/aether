@@ -10,7 +10,7 @@ import resultRoute from "./routes/resultRoute.js";
 import transactionRoute from "./routes/transactionRoute.js";
 import {startHCSListener} from "./services/hcsListenerService.js";
 
-const allowedOrigins = ['http://localhost:5173', 'http://localhost:3000', 'https://afiya-yx0e.onrender.com', "https://aether-gilt-delta.vercel.app"];
+const allowedOrigins = ['http://localhost:5173', 'http://localhost:3000', 'https://afiya-yx0e.onrender.com', 'https://aether-gilt-delta.vercel.app'];
 
 dotenv.config();
 
