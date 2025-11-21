@@ -37,7 +37,7 @@
     "**/*.mts",
     ".next\\dev/types/**/*.ts",
     ".next\\dev/types/**/*.ts"
-  ],
+, "app/function/[id]/page.jsx", "app/developers/page.jsx", "app/layout.jsx", "app/page.jsx", "components/navbar.jsx"  ],
   "exclude": [
     "node_modules"
   ]

@@ -5,9 +5,11 @@ dotenv.config();
 import axios from "axios";
 import { Client, TopicMessageQuery, Hbar } from "@hashgraph/sdk";
 
+
 import { processJob } from "../utils/aiFunction.js";
 import { postJobReceipt } from "../services/hcsReceiptSubmitter.js";
 import { executeJob } from "./functionExecutionService.js";
+import { storeJobResult } from "../utils/resultStore.js";
 
 // --- HCS Topic & Mirror Node Config ---
 const JOB_TOPIC_ID = process.env.AETHER_JOB_TOPIC_ID;
@@ -75,15 +77,21 @@ function parseMessageContents(msg) {
 // }
 
 
+
+// services/hcsListenerService.js - UPDATED verifyPayment
 export const verifyPayment = async (transferTxId, providerAccountId, priceHbar) => {
   try {
-    // Convert TxID to mirror-compatible format
+    // Convert HBAR → tinybars
+    const expectedTinybar = new Hbar(priceHbar).toTinybars().toNumber();
+
+    console.log(`[Verifier] Expected: ${providerAccountId} to receive ${expectedTinybar} tinybars`);
+
+    // Split TxID into mirror node format
     const [account, timestamp] = transferTxId.split("@");
     const [seconds, nanos] = timestamp.split(".");
     const formattedTxId = `${account}-${seconds}-${nanos}`;
 
     const url = `https://testnet.mirrornode.hedera.com/api/v1/transactions/${formattedTxId}`;
-
     console.log(`[Verifier] Checking payment at: ${url}`);
 
     const { data } = await axios.get(url);
@@ -95,14 +103,36 @@ export const verifyPayment = async (transferTxId, providerAccountId, priceHbar) 
 
     const tx = data.transactions[0];
 
-    // Basic checks (you can expand this)
-    const isSuccess = tx.result === "SUCCESS";
-    const includesProvider = tx.transfers.some(t => t.account === providerAccountId);
-    const includesAmount = tx.transfers.some(t => t.amount >= priceHbar);
+    // Debug: Log all transfers
+    console.log(`[Verifier] Transaction result: ${tx.result}`);
+    console.log(`[Verifier] All transfers:`, JSON.stringify(tx.transfers, null, 2));
 
-    return isSuccess && includesProvider && includesAmount;
+    // Check if transaction succeeded
+    if (tx.result !== "SUCCESS") {
+      console.warn(`[Verifier] Transaction failed: ${tx.result}`);
+      return false;
+    }
+
+    // Check if provider received at least the expected amount
+    const providerTransfer = tx.transfers.find(
+      (t) => t.account === providerAccountId && t.amount >= expectedTinybar
+    );
+
+    if (!providerTransfer) {
+      console.warn(`[Verifier] ❌ Transfer to provider ${providerAccountId} not found or amount insufficient`);
+      console.warn(`[Verifier] Looking for: ${expectedTinybar} tinybars to ${providerAccountId}`);
+      return false;
+    }
+
+    console.log(`[Verifier] ✅ Payment verified: ${providerAccountId} received ${providerTransfer.amount} tinybars`);
+    return true;
+
   } catch (err) {
-    console.error("[Verifier] Mirror Node Error:", err.response?.status, err.response?.data?._status?.messages);
+    console.error("[Verifier] Mirror Node Error:", err.message);
+    if (err.response) {
+      console.error("[Verifier] Status:", err.response.status);
+      console.error("[Verifier] Data:", err.response.data);
+    }
     return false;
   }
 };
@@ -159,8 +189,11 @@ export function startHCSListener() {
           //
           const res = await executeJob(functionIdentifier, input);
 
+          storeJobResult(jobId, res);
+
+
         const receipt = {
-          
+          jobId,
           functionIdentifier,
           res,
           providerAccountId,

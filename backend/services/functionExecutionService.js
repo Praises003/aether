@@ -7,7 +7,7 @@
  *   from the MongoDB ApiFunction collection.
  * - Executes function logic based on executionType:
  *    🔹 LOCAL  -> runs an internal/local handler (from utils/localFunctions.js)
- *    🔹 API    -> makes an HTTP POST/GET request to developer’s endpoint
+ *    🔹 API    -> makes an HTTP POST/GET request to developer's endpoint
  * - Returns normalized output to the job processor.
  */
 
@@ -25,7 +25,7 @@ import { localFunctionHandlers } from "../utils/localFunctions.js";
  * @returns {Promise<any>} Output/result from function execution
  */
 export async function executeJob(functionIdentifier, inputData) {
-  console.log(`[Executor] 🧠 Executing job ${inputData.name} (${functionIdentifier})`);
+  console.log(`[Executor] 🧠 Executing job for ${functionIdentifier}`);
 
   // 1️⃣ Find function metadata in DB
   const fn = await ApiFunction.findOne({ functionIdentifier });
@@ -54,20 +54,34 @@ export async function executeJob(functionIdentifier, inputData) {
     } else if (fn.executionType === "API") {
       // --- EXTERNAL API EXECUTION ---
       console.log(`[Executor] 🔗 Calling API endpoint: ${fn.endpointUrl}`);
-
-      // Allow POST/GET flexibility
-      const method = fn.method?.toUpperCase() || "POST";
-
-      const response = await axios({
+      
+      const method = fn.method?.toUpperCase() || "GET";
+      
+      // ✅ HANDLE URL PARAMETER REPLACEMENT
+      let finalUrl = fn.endpointUrl;
+      
+      // If input is a string and URL has {param}, replace it
+      if (typeof inputData === 'string' && finalUrl.includes('{')) {
+        finalUrl = finalUrl.replace('{country}', encodeURIComponent(inputData));
+      }
+      
+      console.log(`[Executor] Final URL: ${finalUrl}`);
+      
+      const config = {
         method,
-        url: fn.endpointUrl,
-        data: { input: inputData },
+        url: finalUrl,
         timeout: 15000,
-      });
-
+      };
+      
+      // Only add data for POST/PUT requests
+      if (['POST', 'PUT', 'PATCH'].includes(method)) {
+        config.data = { input: inputData };
+      }
+      
+      const response = await axios(config);
       output = response.data;
       console.log(`[Executor] ✅ API executed successfully for ${functionIdentifier}`);
-
+      
     } else {
       throw new Error(`Invalid executionType "${fn.executionType}" in DB.`);
     }

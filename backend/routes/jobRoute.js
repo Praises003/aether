@@ -1,8 +1,10 @@
+// routes/hcsRoute.js
 import express from "express";
-import { executeFunction} from "../controllers/jobController.js";
+import { submitJobToHCS } from "../controllers/jobController.js";
 
 const router = express.Router();
 
-router.post("/", executeFunction);
+// Single endpoint to trigger HCS job submission
+router.post("/submit", submitJobToHCS);
 
 export default router;
