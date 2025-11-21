@@ -15,7 +15,7 @@ export default function MarketplacePage() {
     const fetchFunctions = async () => {
       try {
         // Fetch real functions from your backend
-        const response = await axios.get("http://localhost:5000/api/function")
+        const response = await axios.get("https://aether-foyr.onrender.com/api/function")
         setFunctions(response.data)
       } catch (error) {
         console.error("Failed to fetch functions:", error)

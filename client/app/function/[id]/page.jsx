@@ -24,7 +24,7 @@ export default function FunctionDetailPage() {
   useEffect(() => {
     async function fetchFunction() {
       try {
-        const res = await axios.get(`http://localhost:5000/api/function/${id}`);
+        const res = await axios.get(`https://aether-foyr.onrender.com/api/function/${id}`);
         setFunc(res.data);
       } catch (err) {
         console.error("Failed to fetch function:", err);
@@ -126,7 +126,7 @@ export default function FunctionDetailPage() {
     try {
       console.log("Submitting to HCS...");
 
-      const response = await axios.post('http://localhost:5000/api/hcs/submit', {
+      const response = await axios.post('https://aether-foyr.onrender.com/api/hcs/submit', {
         functionIdentifier: funcData.functionIdentifier,
         input: userInput,
         providerAccountId: funcData.providerAccountId,
@@ -150,7 +150,7 @@ export default function FunctionDetailPage() {
     
     for (let attempt = 1; attempt <= 30; attempt++) {
       try {
-        const response = await axios.get(`http://localhost:5000/api/result/${jobId}`);
+        const response = await axios.get(`https://aether-foyr.onrender.com/api/result/${jobId}`);
         
         if (response.data.status === "completed") {
           console.log("Job completed successfully:", response.data);

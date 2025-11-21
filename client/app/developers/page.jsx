@@ -105,7 +105,7 @@ export default function DeveloperPage() {
     setMessage("");
 
     try {
-      const response = await axios.post("http://localhost:5000/api/function", {
+      const response = await axios.post("https://aether-foyr.onrender.com/api/function", {
         name: formData.name,
         description: formData.description,
         providerAccountId: formData.providerAccountId,
