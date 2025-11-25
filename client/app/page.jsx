@@ -111,7 +111,7 @@ export default function LandingPage() {
               <div className="h-10 w-10 rounded-lg bg-primary/20 flex items-center justify-center">
                 <TrendingUp className="h-6 w-6 text-primary" />
               </div>
-              <span className="font-semibold">HTS</span>
+              <span className="font-semibold">HCS(crypto service)</span>
             </div>
           </div>
         </div>
