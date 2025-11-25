@@ -466,64 +466,64 @@ export default function FunctionDetailPage() {
       )}
 
       {/* Debug Tools */}
-      <div className="mt-4 text-center space-x-2">
-        <button
-          onClick={async () => {
-            console.log("🔍 Debug: Checking wallet state");
-            console.log("Client:", client);
-            console.log("Session:", session);
-            console.log("Account:", accountId);
-            
-            if (client && session) {
-              console.log("Session topic:", session.topic);
-              console.log("Session namespaces:", session.namespaces);
-              console.log("Hedera methods available:", session.namespaces?.hedera?.methods);
-              console.log("Hedera accounts:", session.namespaces?.hedera?.accounts);
-            }
-          }}
-          className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 text-sm"
-        >
-          Debug Wallet State
-        </button>
+  <div className="mt-4 text-center space-x-2">
+    {/* {<button
+      onClick={async () => {
+        console.log("🔍 Debug: Checking wallet state");
+        console.log("Client:", client);
+        console.log("Session:", session);
+        console.log("Account:", accountId);
+        
+        if (client && session) {
+          console.log("Session topic:", session.topic);
+          console.log("Session namespaces:", session.namespaces);
+          console.log("Hedera methods available:", session.namespaces?.hedera?.methods);
+          console.log("Hedera accounts:", session.namespaces?.hedera?.accounts);
+        }
+      }}
+      className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 text-sm"
+    >
+      Debug Wallet State
+    </button>} */}
 
-        {/* Add this debug button to see what's happening */}
-<div className="mt-4 text-center">
-  <button
-    onClick={() => {
-      console.log("🔍 Current state:", { 
-        result, 
-        func, 
-        transactionStep,
-        formattedCountry: func?.functionIdentifier === 'country_api' ? formatCountryData(result) : null 
-      });
-    }}
-    className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 text-sm"
-  >
-    Debug Current State
-  </button>
-</div>
-
-        <button
-          onClick={async () => {
-            console.log("🔄 Force fresh connection...");
-            await disconnect();
-            await connectWallet();
+    {/* Add this debug button to see what's happening */}
+          {/* {<div className="mt-4 text-center">
+          <button
+          onClick={() => {
+            console.log("🔍 Current state:", { 
+              result, 
+              func, 
+              transactionStep,
+              formattedCountry: func?.functionIdentifier === 'country_api' ? formatCountryData(result) : null 
+            });
           }}
-          className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-sm"
-        >
-          Force Fresh Connection
-        </button>
+          className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 text-sm"
+          >
+          Debug Current State
+          </button>
+          </div>} */}
 
-        <button
-          onClick={async () => {
-            console.log("🗑️ Clearing all sessions...");
-            await clearAllSessions();
-          }}
-          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm"
-        >
-          Clear All Sessions
-        </button>
-      </div>
+    {/* {<button
+      onClick={async () => {
+        console.log("🔄 Force fresh connection...");
+        await disconnect();
+        await connectWallet();
+      }}
+      className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-sm"
+    >
+      Force Fresh Connection
+    </button>} */}
+
+   {/* { <button
+      onClick={async () => {
+        console.log("🗑️ Clearing all sessions...");
+        await clearAllSessions();
+      }}
+      className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm"
+    >
+      Clear All Sessions
+    </button>} */}
+  </div>
 
       {/* Transaction Status */}
       {transactionStep === "processing-hcs" && (
